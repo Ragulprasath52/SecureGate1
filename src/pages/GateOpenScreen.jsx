@@ -22,8 +22,8 @@ export default function GateOpenScreen() {
                     navigate('/');
                 }, 5000);
             } catch (err) {
-                addNotification('Failed to open gate.', 'error');
-                // Handle error if needed
+                console.error("Gate open error:", err);
+                addNotification(`Failed to open gate: ${err.message || 'Unknown Error'}`, 'error');
             }
         };
 

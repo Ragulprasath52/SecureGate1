@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/apiService';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip as ChartTooltip, Legend, Filler, BarElement, ArcElement } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { Users, Clock, CheckCircle, XCircle, Home, ShieldAlert, Zap, CheckSquare, Download, User } from 'lucide-react';
@@ -17,6 +18,33 @@ const sampleVisitors = [
 export default function Dashboard() {
     const { addNotification } = useNotification();
     const [selectedVisitor, setSelectedVisitor] = useState(null);
+    const [visitors, setVisitors] = useState([]);
+    const [stats, setStats] = useState({ total_today: 0, waiting: 0, approved: 0, rejected: 0 });
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchDashboardData = async () => {
+        setIsLoading(true);
+        try {
+            const [statsRes, visitorsRes] = await Promise.all([
+                apiService.getDashboardStats(),
+                apiService.getAllVisitors()
+            ]);
+
+            if (statsRes.success) setStats(statsRes.data);
+            if (visitorsRes.success) setVisitors(visitorsRes.data);
+        } catch (error) {
+            console.error("Failed to fetch dashboard data:", error);
+            addNotification('Failed to load dashboard data', 'error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDashboardData();
+        const interval = setInterval(fetchDashboardData, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const trendData = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -60,25 +88,25 @@ export default function Dashboard() {
             <div className="stats-grid">
                 <div className="stat-card">
                     <div className="stat-header">
-                        <div><div className="stat-title">Total Visitors Today</div><div className="stat-value">124</div></div>
+                        <div><div className="stat-title">Total Visitors Today</div><div className="stat-value">{stats.total_today}</div></div>
                         <div className="stat-icon blue"><Users size={24} /></div>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-header">
-                        <div><div className="stat-title">Waiting Approval</div><div className="stat-value">12</div></div>
+                        <div><div className="stat-title">Waiting Approval</div><div className="stat-value">{stats.waiting}</div></div>
                         <div className="stat-icon orange"><Clock size={24} /></div>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-header">
-                        <div><div className="stat-title">Approved Entry</div><div className="stat-value">98</div></div>
+                        <div><div className="stat-title">Approved Entry</div><div className="stat-value">{stats.approved}</div></div>
                         <div className="stat-icon green"><CheckCircle size={24} /></div>
                     </div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-header">
-                        <div><div className="stat-title">Rejected / Denied</div><div className="stat-value">14</div></div>
+                        <div><div className="stat-title">Rejected / Denied</div><div className="stat-value">{stats.rejected}</div></div>
                         <div className="stat-icon red"><XCircle size={24} /></div>
                     </div>
                 </div>
@@ -103,15 +131,18 @@ export default function Dashboard() {
                             <tr><th>Visitor</th><th>Flat</th><th>Purpose</th><th>Status</th><th>Time</th></tr>
                         </thead>
                         <tbody>
-                            {sampleVisitors.map(v => (
+                            {visitors.map(v => (
                                 <tr key={v.id} onClick={() => setSelectedVisitor(v)}>
                                     <td>{v.name}</td>
                                     <td>{v.flat}</td>
                                     <td>{v.purpose}</td>
                                     <td><span className={`status-badge status-${v.status.toLowerCase()}`}>{v.status}</span></td>
-                                    <td>{v.time}</td>
+                                    <td>{new Date(v.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                 </tr>
                             ))}
+                            {visitors.length === 0 && !isLoading && (
+                                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--admin-text-muted)' }}>No visitors registered today.</td></tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -48,7 +48,7 @@ export default function AdminTopNav({ isDarkMode, setIsDarkMode, toggleMobileMen
                 <div className="user-profile">
                     <div className="avatar">A</div>
                     <div className="user-details" style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--admin-text-main)' }}>Admin</span>
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--admin-text-main)' }}>Sir</span>
                         <span style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>MNG-204</span>
                     </div>
                 </div>

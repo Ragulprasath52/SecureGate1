@@ -1,28 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Download, Filter, ClipboardList } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { useNotification } from '../components/NotificationProvider';
-
-const entryLogData = [
-    { id: 1, visitor: "Rahul Sharma", flat: "A-101", entry: "2023-10-25 10:30 AM", exit: "2023-10-25 10:45 AM", approvedBy: "Ramesh Kumar", guard: "Ram Singh" },
-    { id: 2, visitor: "Priya Singh", flat: "B-205", entry: "2023-10-25 11:15 AM", exit: "-", approvedBy: "Sneha Reddy", guard: "Ram Singh" },
-    { id: 3, visitor: "Suresh Patel", flat: "C-302", entry: "2023-10-25 09:45 AM", exit: "-", approvedBy: "Auto-Rejected", guard: "Abdul Khan" },
-    { id: 4, visitor: "Sneha Reddy", flat: "A-404", entry: "2023-10-25 08:00 AM", exit: "2023-10-25 11:30 AM", approvedBy: "Vikram Singh", guard: "Abdul Khan" },
-];
+import { apiService } from '../services/apiService';
 
 export default function EntryLogs() {
     const { addNotification } = useNotification();
     const [searchQuery, setSearchQuery] = useState('');
+    const [logs, setLogs] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchLogs = async () => {
+        setIsLoading(true);
+        try {
+            const res = await apiService.getAllVisitors();
+            if (res.success) {
+                setLogs(res.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch logs:", error);
+            addNotification('Failed to load entry logs', 'error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLogs();
+    }, []);
 
     const handleExport = () => {
         addNotification('Preparing audit logs export...', 'loading', 2000);
         setTimeout(() => addNotification('Audit logs exported successfully', 'success'), 2000);
     };
 
-    const filteredLogs = entryLogData.filter(log =>
-        log.visitor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const filteredLogs = logs.filter(log =>
+        log.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         log.flat.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        log.guard.toLowerCase().includes(searchQuery.toLowerCase())
+        (log.guard || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -59,26 +74,29 @@ export default function EntryLogs() {
                                 <th>Entry Time</th>
                                 <th>Exit Time</th>
                                 <th>Approved By</th>
-                                <th>Duty Guard</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredLogs.map(log => (
                                 <tr key={log.id}>
-                                    <td style={{ fontWeight: 600 }}>{log.visitor}</td>
+                                    <td style={{ fontWeight: 600 }}>{log.name}</td>
                                     <td><span className="flat-badge">{log.flat}</span></td>
-                                    <td style={{ fontSize: '0.875rem' }}>{log.entry}</td>
-                                    <td style={{ fontSize: '0.875rem', color: log.exit === '-' ? 'var(--admin-warning)' : 'inherit' }}>
-                                        {log.exit}
+                                    <td style={{ fontSize: '0.875rem' }}>{new Date(log.created_at).toLocaleString()}</td>
+                                    <td style={{ fontSize: '0.875rem', color: !log.exit_time ? 'var(--admin-warning)' : 'inherit' }}>
+                                        {log.exit_time || '-'}
                                     </td>
                                     <td>
-                                        <div style={{ fontSize: '0.875rem' }}>{log.approvedBy}</div>
+                                        <div style={{ fontSize: '0.875rem' }}>{log.host || 'Resident'}</div>
                                     </td>
                                     <td>
-                                        <div style={{ fontSize: '0.875rem', color: 'var(--admin-text-muted)' }}>{log.guard}</div>
+                                        <span className={`status-badge status-${log.status.toLowerCase()}`}>{log.status}</span>
                                     </td>
                                 </tr>
                             ))}
+                            {filteredLogs.length === 0 && !isLoading && (
+                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--admin-text-muted)' }}>No logs found.</td></tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

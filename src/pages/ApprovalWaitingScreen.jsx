@@ -88,7 +88,7 @@ export default function ApprovalWaitingScreen() {
                         <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Home size={16} /></div>
                         <div style={{ flex: 1 }}>
                             <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>Destination</span>
-                            <span style={{ display: 'block', color: '#0f172a', fontWeight: 600 }}>Flat A-101</span>
+                            <span style={{ display: 'block', color: '#0f172a', fontWeight: 600 }}>Flat {visitorFlat}</span>
                         </div>
                     </div>
 

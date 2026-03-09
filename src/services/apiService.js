@@ -1,68 +1,66 @@
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Mock database to hold request states: waiting, approved, denied
-const mockRequests = {};
+const handleResponse = async (response) => {
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+    }
+    return data;
+};
 
 export const apiService = {
-    async registerVisitor(data) {
-        await delay(1000);
-        const requestId = Date.now().toString();
-        const timestamp = new Date().toLocaleTimeString();
-
-        mockRequests[requestId] = {
-            id: requestId,
-            ...data,
-            timestamp,
-            status: 'waiting'
-        };
-
-        const approvalLink = `${window.location.origin}/resident/approve/${requestId}`;
-
-        return {
-            success: true,
-            message: "Visitor registered successfully.",
-            data: {
-                requestId,
-                approvalLink
-            }
-        };
+    async registerVisitor(visitorData) {
+        const response = await fetch(`${API_BASE_URL}/visitors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(visitorData),
+        });
+        return handleResponse(response);
     },
 
-    async checkRequestStatus(requestId) {
-        // no artificial delay to make polling snappy
-        const req = mockRequests[requestId];
-        if (!req) throw new Error('Request not found');
-        return { success: true, status: req.status };
+    async getAllVisitors() {
+        const response = await fetch(`${API_BASE_URL}/visitors`);
+        return handleResponse(response);
     },
 
-    async getRequestDetails(requestId) {
-        await delay(500);
-        const req = mockRequests[requestId];
-        if (!req) throw new Error('Request not found');
-        return { success: true, data: req };
+    async getDashboardStats() {
+        const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
+        return handleResponse(response);
     },
 
-    async approveVisitor(requestId) {
-        await delay(1000);
-        if (mockRequests[requestId]) {
-            mockRequests[requestId].status = 'approved';
-        }
-        return { success: true, message: "Request approved." };
+    async checkRequestStatus(id) {
+        const response = await fetch(`${API_BASE_URL}/visitors/${id}`);
+        const data = await handleResponse(response);
+        return { success: true, status: data.data.status };
     },
 
-    async rejectVisitor(requestId) {
-        await delay(1000);
-        if (mockRequests[requestId]) {
-            mockRequests[requestId].status = 'denied';
-        }
-        return { success: true, message: "Request rejected." };
+    async getRequestDetails(id) {
+        const response = await fetch(`${API_BASE_URL}/visitors/${id}`);
+        return handleResponse(response);
+    },
+
+    async approveVisitor(id) {
+        const response = await fetch(`${API_BASE_URL}/visitors/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'approved' }),
+        });
+        return handleResponse(response);
+    },
+
+    async rejectVisitor(id) {
+        const response = await fetch(`${API_BASE_URL}/visitors/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected' }),
+        });
+        return handleResponse(response);
     },
 
     async verifyOTP(otp) {
         await delay(1200);
-        if (otp === '1234') {
-            return { success: true, message: "OTP Verified successfully." };
-        }
+        if (otp === '1234') return { success: true, message: "OTP Verified successfully." };
         throw new Error('Invalid OTP');
     },
 
