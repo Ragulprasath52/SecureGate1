@@ -1,87 +1,88 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, UserCheck, Shield } from 'lucide-react';
+import { ShieldCheck, ArrowRight, UserCheck, Shield, Clock, Lock } from 'lucide-react';
 import '../styles/visitor-form.css'; // Reusing glass-card styles
 
 export default function WelcomeScreen() {
     const navigate = useNavigate();
 
     return (
-        <div className="registration-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
-            <div className="glass-card" style={{ width: '100%', maxWidth: '500px', padding: '4rem 3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="registration-page">
+            <div className="registration-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+                <div className="professional-card animate-slide-in" style={{ width: '100%', maxWidth: '500px', padding: '3.5rem 2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
 
-                {/* Background glow effect */}
-                <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0, pointerEvents: 'none' }}></div>
+                    <div className="trust-badge" style={{ marginBottom: '2rem' }}>
+                        <ShieldCheck size={16} /> Secure Access Kiosk
+                    </div>
 
-                <div
-                    style={{
-                        width: '96px', height: '96px',
-                        borderRadius: '24px',
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(14, 165, 233, 0.1))',
-                        border: '1px solid rgba(59, 130, 246, 0.2)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        marginBottom: '2rem',
-                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), inset 0 2px 4px rgba(255,255,255,0.5)',
-                        position: 'relative',
-                        zIndex: 1
-                    }}
-                >
-                    <ShieldCheck size={48} color="#3b82f6" />
-                </div>
+                    <div
+                        style={{
+                            width: '80px', height: '80px',
+                            borderRadius: '22px',
+                            background: 'var(--color-primary-glow)',
+                            border: '1px solid var(--admin-primary-glow)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            marginBottom: '1.5rem',
+                            boxShadow: 'var(--shadow-md)',
+                            position: 'relative'
+                        }}
+                    >
+                        <ShieldCheck size={42} color="var(--color-primary)" />
+                    </div>
 
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--color-text)', letterSpacing: '-0.03em', position: 'relative', zIndex: 1 }}>
-                    SecureGate
-                </h1>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 850, margin: '0 0 0.25rem 0', color: 'var(--color-text)', letterSpacing: '-0.04em' }}>
+                        SecureGate
+                    </h1>
 
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-primary-dark)', margin: '0 0 1.5rem 0', textTransform: 'uppercase', letterSpacing: '0.1em', position: 'relative', zIndex: 1 }}>
-                    Smart Access Kiosk
-                </h2>
+                    <p style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)', lineHeight: 1.5, marginBottom: '2.5rem', maxWidth: '320px' }}>
+                        Welcome to our secure community. Please tap below to begin your entry process.
+                    </p>
 
-                <p style={{ fontSize: '1.125rem', color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: '3rem', position: 'relative', zIndex: 1, maxWidth: '320px' }}>
-                    Welcome. Please tap the button below to register your visit.
-                </p>
+                    <button
+                        onClick={() => navigate('/register')}
+                        className="submit-btn"
+                        style={{
+                            height: '70px',
+                            fontSize: '1.25rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.75rem',
+                            background: 'var(--color-primary)',
+                            borderRadius: '16px'
+                        }}
+                    >
+                        <UserCheck size={24} /> TAP TO START <ArrowRight size={20} />
+                    </button>
 
-                <button
-                    onClick={() => navigate('/register')}
-                    style={{
-                        width: '100%',
-                        padding: '1.5rem',
-                        background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '16px',
-                        fontSize: '1.25rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
+                    <div style={{
+                        marginTop: '2.5rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '1rem',
-                        boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.1)',
-                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                        position: 'relative',
-                        zIndex: 1,
-                        overflow: 'hidden'
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(59, 130, 246, 0.5), 0 10px 10px -5px rgba(59, 130, 246, 0.2)'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.1)'; }}
-                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translateY(2px)'; }}
-                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                >
-                    <UserCheck size={28} /> TAP TO START VISITOR ENTRY <ArrowRight size={28} />
-                </button>
-
-                <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.875rem', fontWeight: 500, position: 'relative', zIndex: 1 }}>
-                    <Shield size={16} /> Encrypted Digital Access
+                        gap: '1.5rem',
+                        padding: '1rem',
+                        background: 'var(--color-surface-hover)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '16px',
+                        width: '100%'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>
+                            <Lock size={14} /> Encrypted
+                        </div>
+                        <div style={{ width: '1px', height: '12px', background: 'var(--color-border)' }}></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>
+                            <Clock size={14} /> 24/7 Security
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {/* Extremely subtle link to Admin Login for testing purposes */}
-            <div
-                style={{ position: 'absolute', bottom: '1rem', right: '1rem', color: 'rgba(0,0,0,0.1)', cursor: 'pointer', fontSize: '0.75rem', zIndex: 50 }}
-                onClick={() => navigate('/admin-login')}
-            >
-                Admin
+                <div
+                    style={{ marginTop: '2rem', color: 'var(--color-text-light)', opacity: 0.3, cursor: 'pointer', fontSize: '0.75rem', transition: 'all 0.2s ease' }}
+                    onClick={() => navigate('/admin-login')}
+                >
+                    Administrative Login
+                </div>
             </div>
         </div>
     );

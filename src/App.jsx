@@ -21,7 +21,10 @@ import Reports from './pages/Reports';
 import SecurityAlerts from './pages/SecurityAlerts';
 import SystemSettings from './pages/SystemSettings';
 
+import { useNavigate } from 'react-router-dom';
+
 function KioskHeader() {
+  const navigate = useNavigate();
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
   useEffect(() => {
@@ -33,7 +36,7 @@ function KioskHeader() {
 
   return (
     <div className="kiosk-header">
-      <div className="kiosk-logo">
+      <div className="kiosk-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
         <ShieldCheck size={28} />
         SecureGate Control
       </div>
@@ -68,7 +71,7 @@ function App() {
           <Route path="/resident/approve/:id" element={<ResidentApprovalPage />} />
 
           {/* Demo Verification Page Route */}
-          <Route path="/video-verification" element={<VideoVerificationPage />} />
+          <Route path="/video-verification" element={<KioskLayout><VideoVerificationPage /></KioskLayout>} />
 
           {/* Admin Routes */}
           <Route path="/admin-login" element={<AdminLogin />} />

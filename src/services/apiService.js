@@ -1,9 +1,11 @@
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = 'http://10.100.20.27:8000/api';
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const handleResponse = async (response) => {
+    console.log(`API [${response.url}] Status: ${response.status}`);
     const data = await response.json();
     if (!response.ok) {
+        console.error(`API Error:`, data);
         throw new Error(data.message || 'Something went wrong');
     }
     return data;
@@ -40,20 +42,11 @@ export const apiService = {
         return handleResponse(response);
     },
 
-    async approveVisitor(id) {
+    async updateVisitorStatus(id, status, rejectionReason = null) {
         const response = await fetch(`${API_BASE_URL}/visitors/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'approved' }),
-        });
-        return handleResponse(response);
-    },
-
-    async rejectVisitor(id) {
-        const response = await fetch(`${API_BASE_URL}/visitors/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'rejected' }),
+            body: JSON.stringify({ status, rejection_reason: rejectionReason }),
         });
         return handleResponse(response);
     },

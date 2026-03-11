@@ -9,7 +9,7 @@ export default function VisitorRegistrationForm() {
     const navigate = useNavigate();
     const { addNotification, removeNotification } = useNotification();
 
-    const [formData, setFormData] = useState({ name: '', phone: '', flat: '', purpose: '', photo: null });
+    const [formData, setFormData] = useState({ name: '', phone: '', flat: '', purpose: '', otherPurpose: '', photo: null, residentPhone: '9345272947' });
     const [touched, setTouched] = useState({});
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,8 +40,15 @@ export default function VisitorRegistrationForm() {
                 if (!value) error = 'Flat/House number is required';
                 else if (!/^[A-Z]-\d{3}$/.test(value) && !/^[A-Z]\d{3}$/.test(value) && value.length < 2) error = 'Format: A-101 or B-205';
                 break;
+            case 'residentPhone':
+                if (!value) error = 'Resident contact is required';
+                else if (!/^\d{10}$/.test(value)) error = 'Exactly 10 digits required';
+                break;
             case 'purpose':
                 if (!value) error = 'Please select a purpose';
+                break;
+            case 'otherPurpose':
+                if (formData.purpose === 'Other' && !value) error = 'Please specify your purpose';
                 break;
             default:
                 break;
@@ -51,7 +58,8 @@ export default function VisitorRegistrationForm() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        const updatedData = { ...formData, [name]: value };
+        setFormData(updatedData);
         if (touched[name]) {
             setErrors({ ...errors, [name]: validate(name, value) });
         }
@@ -68,7 +76,9 @@ export default function VisitorRegistrationForm() {
             formData.name && !validate('name', formData.name) &&
             formData.phone && !validate('phone', formData.phone) &&
             formData.flat && !validate('flat', formData.flat) &&
-            formData.purpose && !validate('purpose', formData.purpose)
+            formData.residentPhone && !validate('residentPhone', formData.residentPhone) &&
+            formData.purpose && !validate('purpose', formData.purpose) &&
+            (formData.purpose !== 'Other' || (formData.otherPurpose && !validate('otherPurpose', formData.otherPurpose)))
         );
     };
 
@@ -79,7 +89,9 @@ export default function VisitorRegistrationForm() {
             name: validate('name', formData.name),
             phone: validate('phone', formData.phone),
             flat: validate('flat', formData.flat),
-            purpose: validate('purpose', formData.purpose)
+            residentPhone: validate('residentPhone', formData.residentPhone),
+            purpose: validate('purpose', formData.purpose),
+            otherPurpose: formData.purpose === 'Other' ? validate('otherPurpose', formData.otherPurpose) : ''
         };
 
         setErrors(newErrors);
@@ -94,20 +106,23 @@ export default function VisitorRegistrationForm() {
         const loadingId = addNotification('Transmitting entry request...', 'loading', 0);
 
         try {
-            const response = await apiService.registerVisitor(formData);
+            const response = await apiService.registerVisitor({
+                ...formData,
+                resident_phone: formData.residentPhone
+            });
             removeNotification(loadingId);
             addNotification('Entry request sent successfully!', 'success');
             setSubmitSuccess(true);
 
             setTimeout(() => {
-                navigate('/waiting', {
+                navigate('/video-verification', {
                     state: {
                         flat: formData.flat,
                         requestId: response.data.requestId,
                         link: response.data.approvalLink
                     }
                 });
-            }, 3000);
+            }, 2000);
         } catch (err) {
             removeNotification(loadingId);
             addNotification('Failed to send request. Try again.', 'error');
@@ -136,7 +151,7 @@ export default function VisitorRegistrationForm() {
     if (submitSuccess) {
         return (
             <div className="registration-container">
-                <div className="glass-card approval-indicator">
+                <div className="professional-card indicator-card">
                     <div className="ripple-circle success">
                         <CheckCircle2 size={40} color="var(--color-success)" />
                     </div>
@@ -154,185 +169,234 @@ export default function VisitorRegistrationForm() {
     }
 
     return (
-        <div className="registration-container">
-            <div className="glass-card">
-                <div className="trust-badge">
-                    <ShieldCheck size={16} />
-                    <span>SecureGate Encrypted Entry</span>
-                </div>
-
-                <div className="form-header">
-                    <button type="button" className="back-btn" onClick={() => navigate('/')}>
-                        <ChevronLeft size={24} />
-                    </button>
-                    <h2 className="header-title">Visitor Entry</h2>
-                    <div style={{ width: '40px' }}></div>
-                </div>
-
-                <form onSubmit={handleSubmit} noValidate>
-                    <div className="input-wrapper">
-                        <label className="input-label">Visitor Full Name</label>
-                        <div style={{ position: 'relative' }}>
-                            <User size={20} className="input-icon" />
-                            <input
-                                ref={nameRef}
-                                type="text"
-                                name="name"
-                                className={`input-field ${getInputStatusClass('name')}`}
-                                value={formData.name}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="Enter name"
-                                autoComplete="off"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        phoneRef.current?.focus();
-                                    }
-                                }}
-                            />
-                            {touched.name && (
-                                errors.name ?
-                                    <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
-                                    <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
-                            )}
-                        </div>
-                        {touched.name && errors.name && <span className="error-message"><AlertCircle size={14} /> {errors.name}</span>}
+        <div className="registration-page">
+            <div className="registration-container">
+                <div className="professional-card">
+                    <div className="trust-badge">
+                        <ShieldCheck size={16} />
+                        <span>SecureGate Encrypted Entry</span>
                     </div>
 
-                    <div className="input-wrapper">
-                        <label className="input-label">Phone Number</label>
-                        <div style={{ position: 'relative' }}>
-                            <Phone size={20} className="input-icon" />
-                            <input
-                                ref={phoneRef}
-                                type="tel"
-                                name="phone"
-                                className={`input-field ${getInputStatusClass('phone')}`}
-                                value={formData.phone}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="10-digit mobile number"
-                                autoComplete="off"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        flatRef.current?.focus();
-                                    }
-                                }}
-                            />
-                            {touched.phone && (
-                                errors.phone ?
-                                    <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
-                                    <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
-                            )}
-                        </div>
-                        {touched.phone && errors.phone && <span className="error-message"><AlertCircle size={14} /> {errors.phone}</span>}
+                    <div className="form-header">
+                        <button type="button" className="back-btn" onClick={() => navigate('/')}>
+                            <ChevronLeft size={22} />
+                        </button>
+                        <h2 className="header-title">Visitor Entry</h2>
                     </div>
 
-                    <div className="input-wrapper">
-                        <label className="input-label">Flat / House Number</label>
-                        <div style={{ position: 'relative' }}>
-                            <Home size={20} className="input-icon" />
-                            <input
-                                ref={flatRef}
-                                type="text"
-                                name="flat"
-                                className={`input-field ${getInputStatusClass('flat')}`}
-                                value={formData.flat}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="e.g. A-101"
-                                autoComplete="off"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        purposeRef.current?.focus();
-                                    }
-                                }}
-                            />
-                            {touched.flat && (
-                                errors.flat ?
-                                    <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
-                                    <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
-                            )}
+                    <form onSubmit={handleSubmit} noValidate>
+                        <div className="input-wrapper">
+                            <label className="input-label">Visitor Full Name</label>
+                            <div className="input-field-wrapper">
+                                <User size={20} className="input-icon" />
+                                <input
+                                    ref={nameRef}
+                                    type="text"
+                                    name="name"
+                                    className={`input-field ${getInputStatusClass('name')}`}
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Enter name"
+                                    autoComplete="off"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            phoneRef.current?.focus();
+                                        }
+                                    }}
+                                />
+                                {touched.name && (
+                                    errors.name ?
+                                        <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                        <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                )}
+                            </div>
+                            {touched.name && errors.name && <span className="error-message"><AlertCircle size={14} /> {errors.name}</span>}
                         </div>
-                        {touched.flat && errors.flat && <span className="error-message"><AlertCircle size={14} /> {errors.flat}</span>}
-                    </div>
 
-                    <div className="input-wrapper">
-                        <label className="input-label">Visit Purpose</label>
-                        <div style={{ position: 'relative' }}>
-                            <Briefcase size={20} className="input-icon" />
-                            <select
-                                ref={purposeRef}
-                                name="purpose"
-                                className={`input-field ${getInputStatusClass('purpose')}`}
-                                value={formData.purpose}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            >
-                                <option value="" disabled>Select purpose</option>
-                                <option value="Delivery">Delivery / Courier</option>
-                                <option value="Guest">Guest / Friend</option>
-                                <option value="Maintenance">Maintenance / Service</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <ChevronDown size={20} className="select-arrow" />
-                            {touched.purpose && (
-                                errors.purpose ?
-                                    <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
-                                    <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
-                            )}
+                        <div className="input-wrapper">
+                            <label className="input-label">Phone Number</label>
+                            <div className="input-field-wrapper">
+                                <Phone size={20} className="input-icon" />
+                                <input
+                                    ref={phoneRef}
+                                    type="tel"
+                                    name="phone"
+                                    className={`input-field ${getInputStatusClass('phone')}`}
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="10-digit mobile number"
+                                    autoComplete="off"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            flatRef.current?.focus();
+                                        }
+                                    }}
+                                />
+                                {touched.phone && (
+                                    errors.phone ?
+                                        <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                        <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                )}
+                            </div>
+                            {touched.phone && errors.phone && <span className="error-message"><AlertCircle size={14} /> {errors.phone}</span>}
                         </div>
-                        {touched.purpose && errors.purpose && <span className="error-message"><AlertCircle size={14} /> {errors.purpose}</span>}
-                    </div>
 
-                    <div
-                        className="photo-capture"
-                        onClick={() => fileInputRef.current?.click()}
-                        style={{ borderStyle: capturedImage ? 'solid' : 'dashed', borderColor: capturedImage ? 'var(--color-primary)' : 'var(--color-border)' }}
-                    >
-                        {capturedImage ? (
-                            <>
-                                <img src={capturedImage} alt="Visitor" className="photo-preview" />
-                                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-primary)' }}>Tap to retake photo</span>
-                            </>
-                        ) : (
-                            <>
-                                <Camera size={32} color="var(--color-primary-light)" />
-                                <div>
-                                    <h4 style={{ color: 'var(--color-text)', marginBottom: '0.25rem' }}>Visitor Photo (Recommended)</h4>
-                                    <span style={{ fontSize: '0.825rem' }}>Snapshot for faster verification</span>
+                        <div className="input-wrapper">
+                            <label className="input-label">Flat / House Number</label>
+                            <div className="input-field-wrapper">
+                                <Home size={20} className="input-icon" />
+                                <input
+                                    ref={flatRef}
+                                    type="text"
+                                    name="flat"
+                                    className={`input-field ${getInputStatusClass('flat')}`}
+                                    value={formData.flat}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="e.g. A-101"
+                                    autoComplete="off"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            purposeRef.current?.focus();
+                                        }
+                                    }}
+                                />
+                                {touched.flat && (
+                                    errors.flat ?
+                                        <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                        <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                )}
+                            </div>
+                            {touched.flat && errors.flat && <span className="error-message"><AlertCircle size={14} /> {errors.flat}</span>}
+                        </div>
+
+                        <div className="input-wrapper">
+                            <label className="input-label">Resident WhatsApp Number (To Notify)</label>
+                            <div className="input-field-wrapper">
+                                <Phone size={20} className="input-icon" style={{ color: '#25D366' }} />
+                                <input
+                                    type="tel"
+                                    name="residentPhone"
+                                    className={`input-field ${getInputStatusClass('residentPhone')}`}
+                                    value={formData.residentPhone}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Resident's 10-digit number"
+                                    autoComplete="off"
+                                />
+                                {touched.residentPhone && (
+                                    errors.residentPhone ?
+                                        <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                        <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                )}
+                            </div>
+                            {touched.residentPhone && errors.residentPhone && <span className="error-message"><AlertCircle size={14} /> {errors.residentPhone}</span>}
+                        </div>
+
+                        <div className="input-wrapper">
+                            <label className="input-label">Visit Purpose</label>
+                            <div className="input-field-wrapper">
+                                <Briefcase size={20} className="input-icon" />
+                                <select
+                                    ref={purposeRef}
+                                    name="purpose"
+                                    className={`input-field ${getInputStatusClass('purpose')}`}
+                                    value={formData.purpose}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                >
+                                    <option value="" disabled>Select purpose</option>
+                                    <option value="Delivery">Delivery / Courier</option>
+                                    <option value="Guest">Guest / Friend</option>
+                                    <option value="Maintenance">Maintenance / Service</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <ChevronDown size={20} className="select-arrow" />
+                                {touched.purpose && (
+                                    errors.purpose ?
+                                        <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                        <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                )}
+                            </div>
+                            {touched.purpose && errors.purpose && <span className="error-message"><AlertCircle size={14} /> {errors.purpose}</span>}
+                        </div>
+
+                        {formData.purpose === 'Other' && (
+                            <div className="input-wrapper animate-slide-in">
+                                <label className="input-label">Specify Purpose</label>
+                                <div className="input-field-wrapper">
+                                    <AlertCircle size={20} className="input-icon" />
+                                    <input
+                                        type="text"
+                                        name="otherPurpose"
+                                        className={`input-field ${getInputStatusClass('otherPurpose')}`}
+                                        value={formData.otherPurpose}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        placeholder="Reason for visit"
+                                        autoComplete="off"
+                                    />
+                                    {touched.otherPurpose && (
+                                        errors.otherPurpose ?
+                                            <AlertCircle size={18} className="input-status" color="var(--color-error)" /> :
+                                            <CheckCircle2 size={18} className="input-status" color="var(--color-success)" />
+                                    )}
                                 </div>
-                            </>
+                                {touched.otherPurpose && errors.otherPurpose && <span className="error-message"><AlertCircle size={14} /> {errors.otherPurpose}</span>}
+                            </div>
                         )}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            capture="user"
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            onChange={handlePhotoCapture}
-                        />
-                    </div>
 
-                    <button
-                        type="submit"
-                        className={`submit-btn ${isSubmitting ? 'loading' : ''} ${!isFormValid() ? 'disabled' : ''}`}
-                        disabled={isSubmitting || !isFormValid()}
-                        style={{ marginTop: '1rem' }}
-                    >
-                        {isSubmitting ? (
-                            <>Sending Request <Loader2 size={24} className="spinner" /></>
-                        ) : (
-                            <>Send Entry Request <Send size={20} /></>
-                        )}
-                    </button>
-                    <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '1.5rem' }}>
-                        By clicking send, you agree to our Terms of Service and Privacy Policy.
-                    </p>
-                </form>
+                        <div
+                            className="photo-capture"
+                            onClick={() => fileInputRef.current?.click()}
+                            style={{ borderStyle: capturedImage ? 'solid' : 'dashed', borderColor: capturedImage ? 'var(--color-primary)' : 'var(--color-border)' }}
+                        >
+                            {capturedImage ? (
+                                <>
+                                    <img src={capturedImage} alt="Visitor" className="photo-preview" />
+                                    <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-primary)' }}>Tap to retake photo</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Camera size={32} color="var(--color-primary-light)" />
+                                    <div>
+                                        <h4 style={{ color: 'var(--color-text)', marginBottom: '0.25rem' }}>Visitor Photo (Recommended)</h4>
+                                        <span style={{ fontSize: '0.825rem' }}>Snapshot for faster verification</span>
+                                    </div>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                capture="user"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                onChange={handlePhotoCapture}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className={`submit-btn ${isSubmitting ? 'loading' : ''} ${!isFormValid() ? 'disabled' : ''}`}
+                            disabled={isSubmitting || !isFormValid()}
+                            style={{ marginTop: '1rem' }}
+                        >
+                            {isSubmitting ? (
+                                <>Sending Request <Loader2 size={24} className="spinner" /></>
+                            ) : (
+                                <>Send Entry Request <Send size={20} /></>
+                            )}
+                        </button>
+                        <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '1.5rem' }}>
+                            By clicking send, you agree to our Terms of Service and Privacy Policy.
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     );

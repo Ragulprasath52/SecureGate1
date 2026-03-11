@@ -1,15 +1,15 @@
 /* Modern SaaS Admin Dashboard Styles */
 :root {
-    --admin-bg: #f4f6fa;
+    --admin-bg: #f8fafc;
     --admin-surface: #ffffff;
-    --admin-surface-hover: #f9fafb;
-    --admin-border: #e5e7eb;
+    --admin-surface-hover: #f1f5f9;
+    --admin-border: #e2e8f0;
 
-    --admin-text-main: #111827;
-    --admin-text-muted: #6b7280;
+    --admin-text-main: #1e293b;
+    --admin-text-muted: #64748b;
 
-    --admin-primary: #3b82f6;
-    --admin-primary-glow: rgba(59, 130, 246, 0.15);
+    --admin-primary: var(--color-primary);
+    --admin-primary-glow: rgba(59, 130, 246, 0.08);
     --admin-primary-dark: #2563eb;
 
     --admin-success: #10b981;
@@ -24,27 +24,9 @@
     --sidebar-w: 260px;
     --sidebar-w-collapsed: 80px;
 
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.dark-mode {
-    --admin-bg: #0f172a;
-    --admin-surface: #1e293b;
-    --admin-surface-hover: #334155;
-    --admin-border: #334155;
-
-    --admin-text-main: #f8fafc;
-    --admin-text-muted: #94a3b8;
-
-    --admin-primary-glow: rgba(59, 130, 246, 0.2);
-    --admin-success-bg: rgba(16, 185, 129, 0.15);
-    --admin-warning-bg: rgba(245, 158, 11, 0.15);
-    --admin-error-bg: rgba(239, 68, 68, 0.15);
-    --admin-info-bg: rgba(14, 165, 233, 0.15);
-
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
 }
 
 .admin-layout {
@@ -80,7 +62,9 @@
 /* Sidebar Navigation */
 .sidebar {
     width: var(--sidebar-w);
-    background-color: var(--admin-surface);
+    background-color: var(--color-sidebar);
+    /* Pure White */
+    color: var(--admin-text-main);
     border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
@@ -153,7 +137,7 @@
 
 .menu-item:hover {
     background: var(--admin-surface-hover);
-    color: var(--admin-text-main);
+    color: var(--admin-primary);
 }
 
 .menu-item.active {
@@ -311,8 +295,7 @@
 .stat-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    align-items: center;
 }
 
 .stat-title {

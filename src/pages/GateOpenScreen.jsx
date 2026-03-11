@@ -35,22 +35,26 @@ export default function GateOpenScreen() {
     }, [navigate]);
 
     return (
-        <div className="card">
-            {!isOpen ? (
-                <DoorOpen size={80} color="var(--color-primary)" className="animate-pulse" style={{ marginBottom: '1.5rem' }} />
-            ) : (
-                <ShieldCheck size={80} color="var(--color-success)" style={{ marginBottom: '1.5rem', animation: 'fadeInUp 0.5s' }} />
-            )}
+        <div className="registration-page">
+            <div className="registration-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+                <div className="professional-card" style={{ textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem 2rem' }}>
+                    {!isOpen ? (
+                        <DoorOpen size={80} color="var(--color-primary)" className="animate-pulse" style={{ marginBottom: '1.5rem' }} />
+                    ) : (
+                        <ShieldCheck size={80} color="var(--color-success)" style={{ marginBottom: '1.5rem', animation: 'fadeInUp 0.5s' }} />
+                    )}
 
-            <div className="gate-animation-container">
-                <div className={`gate-door left ${isOpen ? 'open' : ''}`}></div>
-                <div className={`gate-door right ${isOpen ? 'open' : ''}`}></div>
+                    <div className="gate-animation-container">
+                        <div className={`gate-door left ${isOpen ? 'open' : ''}`}></div>
+                        <div className={`gate-door right ${isOpen ? 'open' : ''}`}></div>
+                    </div>
+
+                    <h1 style={{ color: isOpen ? 'var(--color-success)' : 'var(--color-primary)', fontSize: '2rem', fontWeight: 800, margin: '1rem 0' }}>
+                        {isOpen ? 'Welcome In!' : 'Gate Opening...'}
+                    </h1>
+                    <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.6, fontSize: '1rem' }}>{isOpen ? 'Please proceed through the gate.' : 'Verifying connection and commanding gate mechanism.'}</p>
+                </div>
             </div>
-
-            <h1 style={{ color: isOpen ? 'var(--color-success)' : 'var(--color-primary)' }}>
-                {isOpen ? 'Welcome In!' : 'Gate Opening...'}
-            </h1>
-            <p>{isOpen ? 'Please proceed through the gate.' : 'Verifying connection and commanding gate mechanism.'}</p>
         </div>
     );
 }

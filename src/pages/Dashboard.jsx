@@ -52,9 +52,14 @@ export default function Dashboard() {
             label: 'Visitors',
             data: [65, 59, 80, 81, 56, 120, 140],
             borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            backgroundColor: 'rgba(59, 130, 246, 0.08)',
             tension: 0.4,
             fill: true,
+            pointBackgroundColor: '#ffffff',
+            pointBorderColor: '#3b82f6',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
         }]
     };
 
@@ -65,7 +70,12 @@ export default function Dashboard() {
 
     const blockData = {
         labels: ['Block A', 'Block B', 'Block C', 'Block D'],
-        datasets: [{ data: [40, 25, 20, 15], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }]
+        datasets: [{
+            data: [40, 25, 20, 15],
+            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+            borderWidth: 0,
+            hoverOffset: 4
+        }]
     };
 
     const handleExport = () => {

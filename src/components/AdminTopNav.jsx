@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Clock, Sun, Moon, Bell, Menu } from 'lucide-react';
 
-export default function AdminTopNav({ isDarkMode, setIsDarkMode, toggleMobileMenu }) {
+export default function AdminTopNav({ toggleMobileMenu }) {
     const [currentTime, setCurrentTime] = useState('');
 
     useEffect(() => {
@@ -36,9 +36,6 @@ export default function AdminTopNav({ isDarkMode, setIsDarkMode, toggleMobileMen
                     <Clock size={16} /> {currentTime}
                 </span>
 
-                <button className="action-btn" onClick={() => setIsDarkMode(!isDarkMode)}>
-                    {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
 
                 <button className="action-btn">
                     <Bell size={20} />

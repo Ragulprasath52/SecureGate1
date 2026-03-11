@@ -40,33 +40,32 @@ export default function AdminLogin() {
             justifyContent: 'center',
             minHeight: '100vh',
             width: '100vw',
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            background: 'var(--color-background)',
             fontFamily: 'Inter, sans-serif'
         }}>
             <div style={{
-                background: 'rgba(30, 41, 59, 0.7)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                padding: '3rem 2.5rem',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                padding: '3.5rem 2.5rem',
                 borderRadius: '24px',
                 width: '100%',
-                maxWidth: '420px',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                maxWidth: '440px',
+                boxShadow: 'var(--shadow-lg)'
             }}>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2.5rem' }}>
                     <div style={{
                         width: '64px', height: '64px',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        border: '1px solid rgba(59, 130, 246, 0.2)',
+                        background: 'var(--color-primary-glow)',
+                        border: '1px solid var(--admin-primary-glow)',
                         borderRadius: '16px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         marginBottom: '1rem'
                     }}>
-                        <ShieldCheck size={36} color="#3b82f6" />
+                        <ShieldCheck size={36} color="var(--color-primary)" />
                     </div>
-                    <h1 style={{ color: 'white', fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>SecureGate Admin</h1>
-                    <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.95rem' }}>Login to access the security dashboard</p>
+                    <h1 style={{ color: 'var(--color-text)', fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>SecureGate Admin</h1>
+                    <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.95rem' }}>Login to access the security dashboard</p>
                 </div>
 
                 {errorLine && (
@@ -98,17 +97,23 @@ export default function AdminLogin() {
                             onChange={handleChange}
                             style={{
                                 width: '100%',
-                                background: 'rgba(15, 23, 42, 0.6)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                background: 'white',
+                                border: '1px solid var(--color-border)',
                                 padding: '1.25rem 1.25rem 1.25rem 3.25rem',
                                 borderRadius: '12px',
-                                color: 'white',
+                                color: 'var(--color-text)',
                                 fontSize: '1rem',
                                 outline: 'none',
-                                transition: 'border-color 0.2s'
+                                transition: 'all 0.2s'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--color-primary)';
+                                e.target.style.boxShadow = '0 0 0 4px var(--admin-primary-glow)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'var(--color-border)';
+                                e.target.style.boxShadow = 'none';
+                            }}
                         />
                     </div>
 
@@ -122,17 +127,23 @@ export default function AdminLogin() {
                             onChange={handleChange}
                             style={{
                                 width: '100%',
-                                background: 'rgba(15, 23, 42, 0.6)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                background: 'white',
+                                border: '1px solid var(--color-border)',
                                 padding: '1.25rem 1.25rem 1.25rem 3.25rem',
                                 borderRadius: '12px',
-                                color: 'white',
+                                color: 'var(--color-text)',
                                 fontSize: '1rem',
                                 outline: 'none',
-                                transition: 'border-color 0.2s'
+                                transition: 'all 0.2s'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)'}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--color-primary)';
+                                e.target.style.boxShadow = '0 0 0 4px var(--admin-primary-glow)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'var(--color-border)';
+                                e.target.style.boxShadow = 'none';
+                            }}
                         />
                     </div>
 
@@ -168,7 +179,7 @@ export default function AdminLogin() {
                     </button>
                 </form>
 
-                <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: '#64748b' }}>
+                <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
                     Protected by SecureGate v2.0 Enterprise
                 </div>
             </div>
